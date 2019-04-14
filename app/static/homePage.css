@@ -1,0 +1,34 @@
+
+@media(min-width: 992px)
+{
+  /*.brand-logo{
+    padding-left: 20px !important;
+  }*/
+  .sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 18%; /* Set the width of the sidebar */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    overflow-x: hidden;  /*Disable horizontal scroll*/ 
+}
+
+    main {
+        margin-left: 18%; /* Same as the width of the sidebar */
+        padding: 0px 10px;
+    }
+    nav {
+      width: 100%;
+    }
+}
+td {
+    padding: 10px;
+}
+.dropdown-content{
+    width: auto !important; 
+    height: auto !important;
+}
+
+input{
+  margin-bottom: 0px !important;
+}

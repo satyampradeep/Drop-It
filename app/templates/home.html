@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="homePage.css") }}">
+{% endblock %}
+{% block content %}
+<header>
+	<ul class="sidenav sidenav-fixed" id="mobile-demo">
+	    <li><div class="user-view">
+	      <a><h5>Welcome</h5></a>
+	      <a><span class="name">{{user.username}}</span></a>
+	      <a><span class="email">{{user.email}}</span></a>
+	      <a><span class="email">{{ spaceUsed | filesizeformat }} of 1 GB Used</span></a>
+	      <a>
+	      	<span>
+	      		<div class="progress" style="margin-top: 0px; height: 8px">
+	      			<div class="determinate blue" style="width:{{ spaceUsed//10000000  }}%"></div>
+	      		</div>
+	      	</span>
+	      </a>
+	    </div></li>
+	    <li><div class="divider"></div></li>
+	    <li style="margin-top: 10px" id="myFilesBtn" class="active"><a href="{{ url_for('home') }}"><i style="margin: 0px" class="fas fa-cloud"></i> My Files</a></li>
+	    <li id="sharedFilesBtn"><a style="cursor: pointer;"><i style="margin: 0px" class="fas fa-users"></i>Shared With Me</a></li>
+	    <li id="profileBtn"><a style="cursor: pointer;"><i style="margin: 0px" class="fas fa-user"></i>My Profile</a></li>
+	    <li><div class="divider"></div></li>
+	    <li><a href="{{ url_for('logout') }}"><i style="margin: 0px" class="fas fa-sign-out-alt"></i>Logout</a></li>
+	</ul>
+</header>
+<main>
+	<div id="filesView" style="margin: 10px">
+		<nav class="black">
+		<div class="nav-wrapper" style="margin-bottom: 0px;">
+	        <a href="#" data-target="mobile-demo" class="sidenav-trigger right"><i class="material-icons">menu</i></a>
+	        <form id="searchForm" style="width: 80%">
+		        <div class="input-field">
+		          <input name="searchBox" id="searchBox" type="search" placeholder="search for files...">
+		          <label class="label-icon" for="searchBox"><i class="material-icons">search</i></label>
+		          <i class="material-icons">close</i>
+		        </div>
+		      </form>
+	      </div>
+	  </nav>
+	  <div class="row" id="searchResultsDiv">
+			<div class="col s12">
+				<h5>Search Results</h5>
+				<table class="highlight responsive-table">
+			        <thead>
+			          <tr>
+			              <th>Name</th>
+			              <th>Owner</th>
+			          </tr>
+			        </thead>
+			        <tbody id="searchResults">
+	        			
+			        </tbody>
+		      </table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<h5>Folders</h5>
+				{% if myFolders.count() %}
+				<table class="highlight responsive-table">
+			        <thead>
+			          <tr>
+			              <th>Name</th>
+			              <th>Owner</th>
+			              <th>Created On</th>
+			              <th>Actions</th>
+			          </tr>
+			        </thead>
+			        <tbody>
+			        	{% for item in myFolders %}
+		        			<tr id="{{ item.id }}" class="filePost">
+					            <td><a class="openFileBtn" href="{{ item.url }}/{{ item.filename }}"><i class="fas fa-folder" style="font-size: 32px"></i> {{ item.filename }}</a></td>
+					            <td>{{item.owner.username}}</td>
+					            <td>{{  moment(item.timestamp).fromNow() }}</td>
+					            <td><a class='moreBtn dropdown-trigger' data-target='foldersDropdown'><i class="material-icons">more</i></a></td>
+					          </tr>
+			        	{% endfor %}
+			        </tbody>
+		      </table>
+		      {% else %}
+		      <p>No Folders</p>
+		      {% endif %}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<h5>Files</h5>
+				{% if myFiles.count() %}
+				<table class="highlight responsive-table">
+			        <thead>
+			          <tr>
+			              <th>Name</th>
+			              <th>Size</th>
+			              <th>Created On</th>
+			              <th>Actions</th>
+			          </tr>
+			        </thead>
+			        <tbody>
+			        	{% for item in myFiles %}
+		        			<tr id="{{ item.id }}" class="filePost">
+					            <td><a class="openFileBtn" href="/view/{{item.id}}"><i style="font-size: 32px" class="fas fa-file"></i> {{ item.filename }}</a></td>
+					            <td> {{ item | getSize | filesizeformat}}</td>
+					            <td>{{ moment(item.timestamp).fromNow() }}</td>
+					            <td ><a class='moreBtn dropdown-trigger' data-target='filesDropdown'><i class="material-icons">more</i></a></td>
+					          </tr>
+			        	{% endfor %}
+			       	</tbody>
+			     </table>
+			     {% else %}
+			     <p>No Files</p>
+			     {% endif %}		
+			</div>
+		</div>
+	</div>
+	<div id="profileView" style="margin: 10px">
+		<div class="row">
+		    <form class="col s12" id="editProfileForm">
+			<h5>Edit Your Profile</h5>
+		      <div class="row">
+		        <div class="input-field col s6">
+		          <input id="fname" name="fname" type="text" value="{{ user.fname }}">
+		          <label for="fname">First Name</label>
+		        </div>
+		        <div class="input-field col s6">
+		          <input id="lname" name="lname" type="text" value="{{ user.lname }}">
+		          <label for="lname">Last Name</label>
+		        </div>
+		      </div>
+		      <div class="row">
+		        <div class="input-field col s12">
+		          <input id="username" name="username" type="text" value="{{ user.username }}">
+		          <label for="username">Username</label>
+		        </div>
+		      </div>
+		      <button id="editProfileBtn" class="btn waves-effect">Update</button>
+		    	<div id="editProfileSpinner" class="hide preloader-wrapper small">
+				    <div class="spinner-layer spinner-blue-only">
+				      <div class="circle-clipper left">
+				        <div class="circle"></div>
+				      </div>
+				     <div class="gap-patch">
+				        <div class="circle"></div>
+				      </div>
+				      <div class="circle-clipper right">
+				        <div class="circle"></div>
+				      </div>
+				    </div>
+				</div>
+		    </form>
+		  </div>
+	</div>
+	<div id="sharedFilesView" style="margin: 10px">
+		<div class="row">
+			<div class="col s12">
+				<h5>Files Shared with you</h5>
+				{% if sharedFiles | length %}
+				<table class="highlight responsive-table">
+			        <thead>
+			          <tr>
+			              <th>Name</th>
+			              <th>Owner</th>
+			          </tr>
+			        </thead>
+			        <tbody>
+			        	{% for item in sharedFiles %}
+			        		{%  if item.isFile %}
+			        			<tr id="{{ item.id }}" class="filePost">
+						            <td><a class="openFileBtn" href="/view/{{ item.id }}"><i style="font-size: 32px" class="fas fa-file"></i> {{ item.filename }}</a></td>
+						            <td>{{item.owner.username}}</td>
+						            <!-- <td>{{item.url}}</td> -->
+						            <td><a class='moreBtn dropdown-trigger' data-target='sharedFilesDropdown'><i class="material-icons">more</i></a></td>
+						          </tr>
+			        		{% endif %}
+			        	{% endfor %}
+			       	</tbody>
+			     </table>
+			     {% else %}
+			     <p>No Shared Files</p>
+			     {% endif %}		
+			</div>
+		</div>
+	</div>
+	  <!-- Dropdown Structure -->
+	  <ul id='filesDropdown' class='dropdown-content'>
+	    <li class="delBtn"><a ><i class="fas fa-trash-alt" style="margin-right: 0px"></i> Delete</a></li>
+	    <li class="viewBtn" ><a><i class="fas fa-eye" style="margin-right: 0px"></i> View</a></li>
+	    <li class="downloadBtn"><a><i class="fas fa-file-download" style="margin-right: 0px"></i>Downlaod</a></li>
+	    <li><a class="modal-trigger" href="#shareFileModal"><i class="fas fa-share-alt" style="margin-right: 0px"></i> Share</a></li>
+	  </ul>
+	  <ul id='sharedFilesDropdown' class='dropdown-content'>
+	    <li class="viewBtn" ><a><i class="fas fa-eye" style="margin-right: 0px"></i> View</a></li>
+	    <li class="downloadBtn"><a><i class="fas fa-file-download" style="margin-right: 0px"></i>Downlaod</a></li>
+	  </ul>
+	  <ul id='foldersDropdown' class='dropdown-content'>
+	    <li class="delBtn"><a ><i class="fas fa-trash-alt" style="margin-right: 0px"></i> Delete</a></li>
+	  </ul>
+	<div class="fixed-action-btn">
+	  <a class="btn-floating btn-large red">
+	    <i class="large material-icons">add</i>
+	  </a>
+	  <ul>
+	    <li><a class="btn-floating red modal-trigger" href="#folderModal"><i class="material-icons">create_new_folder</i></a></li>
+	    <li><a class="btn-floating blue modal-trigger" href="#filesModal"><i class="material-icons">cloud_upload</i></a></li>
+	  </ul>
+	</div>
+   <!-- Modal Structure -->
+	  <div id="filesModal" class="modal">
+	    <div class="modal-content"  style="padding: 15px">
+	      <form id="uploadForm" enctype="multipart/form-data">
+		    <div class="file-field input-field" style="margin-bottom: 0px; margin-top: 0px">
+		      <div class="btn">
+		        <span>Files</span>
+		        <input type="file" name="inputFiles" multiple>
+		      </div>
+		      <div class="file-path-wrapper">
+		        <input class="file-path validate" type="text" placeholder="Upload one or more files">
+		      </div>
+		    </div>
+		  </form>
+	    </div>
+	    <div class="modal-footer">
+	      <a class="waves-effect btn" id="uploadBtn">Upload</a>
+	      <div id="uploadSpinner" class="hide preloader-wrapper small">
+		    <div class="spinner-layer spinner-blue-only">
+		      <div class="circle-clipper left">
+		        <div class="circle"></div>
+		      </div>
+		     <div class="gap-patch">
+		        <div class="circle"></div>
+		      </div>
+		      <div class="circle-clipper right">
+		        <div class="circle"></div>
+		      </div>
+		    </div>
+		</div>
+	    </div>
+	  </div>
+	  <div id="folderModal" class="modal">
+	    <div class="modal-content" style="padding: 15px" >
+	      <div class="row" style="margin:0px">
+	        <div class="input-field col s12" style="margin-bottom: 0px;">
+	          <input type="text" id="folderName" name="folderName">
+	          <label for="folderName">Folder Name</label>
+	        </div>
+	      </div>
+	    </div>
+	    <div class="modal-footer">
+	      <a class="waves-effect btn" id="newFolderBtn">Create New Folder</a>
+	    </div>
+	  </div>
+	  <div id="shareFileModal" class="modal">
+	    <div class="modal-content" style="padding: 15px" >
+	      <div class="row" style="margin:0px">
+	        <div class="input-field col s12" style="margin-bottom: 0px;">
+	          <input type="text" id="sharedUsername" name="sharedUsername">
+	          <label for="sharedUsername">Username</label>
+	        </div>
+	      </div>
+	    </div>
+	    <div class="modal-footer">
+	      <a class="waves-effect btn" id="shareBtn">Share</a>
+	    </div>
+	  </div>
+</main>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$('#profileView').fadeOut();
+		$('#searchResultsDiv').fadeOut();
+		$('#sharedFilesView').fadeOut();
+	    $('.sidenav').sidenav();
+	    $('.modal').modal();
+	 	$('.fixed-action-btn').floatingActionButton();
+	  });
+	 	$('.dropdown-trigger').dropdown();
+		var $selectedRow;
+
+		var el=$('main');
+		$editProfileForm=$('#editProfileForm');
+
+		$('.delBtn').on('click',deleteFile);
+		$('.viewBtn').on('click',viewFile);
+		$('.downloadBtn').on('click',downloadFile);
+		$('#shareBtn').on('click', shareFile);
+		$('#uploadBtn').on('click',uploadFile);
+		$('#newFolderBtn').on('click',uploadFile);
+		$("#profileBtn").on('click',showProfile);
+		$("#sharedFilesBtn").on('click',showSharedFiles);
+		$('.moreBtn').on('click',function () {
+			$selectedRow=$(this).closest('tr');
+			console.log($selectedRow);
+		});
+
+		function downloadFile() {
+			fileID=$selectedRow.attr('id');
+			window.location.href="/download/"+fileID;
+		}
+
+		function viewFile() {
+			fileID=$selectedRow.attr('id');
+			window.location.href="/view/"+fileID;
+		}
+
+		$('#searchForm').submit(function (e) {
+			e.preventDefault();
+			$('#searchResults').empty();
+			filename=$('#searchBox').val();
+			$.ajax({
+				url:'/searchFiles',
+				data:{filename:filename},
+				type:'POST',
+				success:function (result) {
+					obj=JSON.parse(result);
+					if(obj.length<1){
+						M.toast({html: 'No results found!', displayLength:3000});
+					}
+					else{
+						for (var i = 0; i < obj.length; i++) {
+							console.log(obj[i].filename);
+							content='<tr class="filePost"><td><a href="'+ obj[i].url + '/' + obj[i].filename + '"><i class="fas fa-file" style="font-size: 32px"></i> '+ obj[i].filename +'</a></td><td>'+obj[i].owner+'</td></tr>';
+							$('#searchResults').append(content);
+						}
+						$('#searchResultsDiv').fadeIn();
+					}
+				}
+			});
+		})
+
+
+		function showSharedFiles() {
+			$(this).addClass('active');
+			$('#myFilesBtn').removeClass('active');
+			$('#profileBtn').removeClass('active');
+			$('#filesView').fadeOut('fast');
+			$('#profileView').fadeOut('fast');	
+			$('#sharedFilesView').fadeIn('slow');	
+		}
+
+		$editProfileForm.submit(function (e) {
+			e.preventDefault();
+			$('#editProfileBtn').addClass('hide');
+            $('#editProfileSpinner').addClass('active');
+            $('#editProfileSpinner').removeClass('hide');
+			var formData=$editProfileForm.serialize();
+			$.ajax({
+				url:'/editProfile',
+				data:formData,
+				type:'POST',
+				success:function (result) {
+					if(result=="1"){
+						M.toast({html: 'Successfully updated!', displayLength:3000});
+						$('#editProfileSpinner').removeClass('active');
+	                    $('#editProfileSpinner').addClass('hide');
+	                    $('#editProfileBtn').removeClass('hide');
+					}
+					else{
+						M.toast({html: result, displayLength:5000});
+	                	$('#editProfileSpinner').removeClass('active');
+	                	$('#editProfileSpinner').addClass('hide');
+	                	$('#editProfileBtn').removeClass('hide');
+					}
+				}
+			});
+		});
+
+
+		function showProfile() {
+			$(this).addClass('active');
+			$('#myFilesBtn').removeClass('active');
+			$('#sharedFilesBtn').removeClass('active');
+			$('#sharedFilesView').fadeOut('fast');
+			$('#filesView').fadeOut('fast');
+			$('#profileView').fadeIn('slow');	
+		}
+
+		function uploadFile() {
+			$('#uploadBtn').addClass('hide');
+            $('#uploadSpinner').addClass('active');
+            $('#uploadSpinner').removeClass('hide');
+			var form = $('form')[2];
+			var formData=new FormData(form);
+			formData.append('url', window.location.pathname);
+			formData.append('folderName', $('#folderName').val());
+			$.ajax({
+				url:'/upload',
+				data:formData,
+				type:'POST',
+				contentType:false,
+				processData:false,
+				success:function (result) {
+					if(result=="1"){
+						M.toast({html: "Succesfully Added !", displayLength:3000});
+						window.location.href=window.location.pathname;
+					}
+					else{
+						M.toast({html: result, displayLength:5000});
+						$('#uploadSpinner').removeClass('active');
+	                	$('#uploadSpinner').addClass('hide');
+	                	$('#uploadBtn').removeClass('hide');
+					}
+				}
+			});
+		}
+
+		function shareFile() {
+			fileID=$selectedRow.attr('id');
+			username=$('#sharedUsername').val();
+			$.ajax({
+				url:"/share",
+				method:'POST',
+				data:{username:username, fileID:fileID},
+				success:function (result) {
+					M.toast({html: result, displayLength:3000});
+				}
+			});
+		}
+
+		function deleteFile() {
+			fileID=$selectedRow.attr('id');
+			$.ajax({
+				url:"/deleteFile/"+fileID,
+				success: function (result) {
+					$selectedRow.fadeOut();
+					M.toast({html: result, displayLength:5000});
+					window.location.href=window.location.pathname;
+				}
+			});
+		}
+	</script>
+{% endblock %}

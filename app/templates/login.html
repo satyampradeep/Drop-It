@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename = 'loginPage.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="navbar-fixed">
+  <nav class="blue">
+    <div class="nav-wrapper">
+      <a style="font-size: 24px;" href="{{url_for('home')}}" class="brand-logo center">Drop it!</a>
+	</div>
+  </nav>
+</div>
+
+<div class="section valign-wrapper" style="background: url({{url_for('static',filename='back.jpg')}}) no-repeat center fixed;background-size: cover;height: 95vh">
+	<div class="row container">
+		<div class="col l4 offset-l4 s12 m12">
+			<div id="LoginFormCard" class="card valign z-depth-5"">
+				<div class="card-content" style="text-align: center;padding: 0px">
+					<span style="font-size: 20px" class="card-title">Login</span>
+				</div>
+				<div class="card-action" style="padding: 0px 15px 15px 15px;">
+					<div class="row" style="margin-bottom: 0px">
+					    <form id="LoginForm" role="form" class="col s12" style="text-align: center;">
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <input id="usrname" type="text" name="usrname">
+					          <label for="usrname">Username</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <input id="psswd" type="password" name="psswd">
+					          <label for="psswd">Password</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <button class="btn waves-effect waves-light" id="LoginFormButton" name="LoginFormButton" type="submit">Login</button>
+						          <div id="loginSpinner" class="hide preloader-wrapper small">
+									    <div class="spinner-layer spinner-blue-only">
+										      <div class="circle-clipper left">
+										        <div class="circle"></div>
+										      </div>
+										     <div class="gap-patch">
+										        <div class="circle"></div>
+										      </div>
+										      <div class="circle-clipper right">
+										        <div class="circle"></div>
+										      </div>
+									    </div>
+								  </div>
+					        </div>
+					      </div>
+					      <p style="text-align: center;margin-top: 5px">Need an account ?<a style="cursor: pointer;margin-right: 0px" onclick="showRegisterForm()"> Sign Up !</a></p>
+					    </form>
+					 </div>
+				</div>
+			</div>
+			<div id="RegisterFormCard" class="hide card valign z-depth-5">
+				<div class="card-content" style="text-align: center;padding: 0px">
+					<span style="font-size: 20px" class="card-title">Register</span>
+				</div>
+				<div class="card-action" style="padding: 0px 15px 15px 15px;">
+					<div class="row" style="margin-bottom: 0px">
+					    <form id="RegisterForm" role="form" class="col s12" style="text-align: center;">
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s6">
+					          <input id="fname" type="text" name="fname">
+					          <label for="fname">First Name</label>
+					        </div>
+					        <div class="input-field col s6">
+					          <input id="lname" type="text" name="lname">
+					          <label for="lname">Last Name</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <input id="username" type="text" name="username" class="tooltipped" data-position="top" data-delay="50" data-tooltip="Be Creative ! Be Anonymous ;)">
+					          <label for="username">Username</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <input id="email" type="text" name="email" class="tooltipped" data-position="top" data-delay="50" data-tooltip="We will verify this :)">
+					          <label for="email">Email</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s6">
+					          <input id="password" type="password" name="password">
+					          <label for="password">Password</label>
+					        </div>
+					        <div class="input-field col s6">
+					          <input id="confirmpassword" type="password" name="confirmpassword">
+					          <label for="confirmpassword">Confirm Password</label>
+					        </div>
+					      </div>
+					      <div class="row" style="margin-bottom: 0px;">
+					        <div class="input-field col s12">
+					          <button class="btn waves-effect waves-light"  type="submit" id="RegisterFormButton" name="RegisterFormButton">Register</button>
+						          <div id="RegisterSpinner" class="hide preloader-wrapper small">
+									    <div class="spinner-layer spinner-blue-only">
+									      <div class="circle-clipper left">
+									        <div class="circle"></div>
+									      </div>
+									     <div class="gap-patch">
+									        <div class="circle"></div>
+									      </div>
+									      <div class="circle-clipper right">
+									        <div class="circle"></div>
+									      </div>
+									    </div>
+									</div>
+					        </div>
+					      </div>
+					      <p style="text-align: center;">Already Signed Up ?<a style="cursor: pointer;margin-right: 0px" onclick="showLoginForm()"> Log In !</a></p>
+					    </form>
+					 </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="section" style="text-align: center;">
+	<h4>About Us</h4>
+	<div class="row container">
+		<div class="col m12 s12 l3" style="text-align: center;margin-bottom: 10px">
+			<img src="{{url_for('static',filename='shashi.jpeg')}}" class="circle team" >
+			<h5>Shashi</h5>
+			<a href="https://www.facebook.com/shashijangra22"><i class="fab fa-facebook iconpadding"></i></a>
+            <a href="https://www.instagram.com/shashijangra/"><i class="fab fa-instagram iconpadding"></i></a>
+            <a href="https://github.com/shashijangra22"><i class="fab fa-github iconpadding"></i></a>
+		</div>
+		<div class="col m12 s12 l3" style="text-align: center;margin-bottom: 10px">
+			<img src="{{url_for('static',filename='varun.jpg')}}" class="circle team">
+			<h5>Varun</h5>
+			<a href="https://www.facebook.com/varun.gupte.1"><i class="fab fa-facebook iconpadding"></i></a>
+            <a href="https://www.instagram.com/gupte_varun"><i class="fab fa-instagram iconpadding"></i></a>
+            <a href="https://github.com/varungupte"><i class="fab fa-github iconpadding"></i></a>
+		</div>
+		<div class="col m12 s12 l3" style="text-align: center;margin-bottom: 10px">
+			<img src="{{url_for('static',filename='sarath.jpeg')}}" class="circle team" >
+			<h5>Sarath</h5>
+			<a href="https://www.facebook.com/sarath.chandra.5283"><i class="fab fa-facebook iconpadding" ></i></a>
+            <a href="https://www.instagram.com/sarath789"><i class="fab fa-instagram iconpadding"></i></a>
+            <a href="https://github.com/saratIIIT"><i class="fab fa-github iconpadding"></i></a>
+		</div>
+		<div class="col m12 s12 l3" style="text-align: center;margin-bottom: 10px">
+			<img src="{{url_for('static',filename='yaswanth.jpeg')}}" class="circle team" >
+			<h5>Yaswanth</h5>
+			<a href="https://www.facebook.com/yassu.yaswanth"><i class="fab fa-facebook iconpadding"></i></a>
+            <a href="https://www.instagram.com/yassu_yaswanth"><i class="fab fa-instagram iconpadding"></i></a>
+            <a href="https://github.com/yaswanthkoravi"><i class="fab fa-github iconpadding"></i></a>
+		</div>
+	</div>
+</div>
+<footer class="page-footer">
+	    Made with <i class="fa fa-heart"></i> at OBH
+	</footer>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+
+	function showRegisterForm() {
+		$('#LoginFormCard').addClass('hide');
+		$('#RegisterFormCard').removeClass('hide');
+	}
+	function showLoginForm() {
+		$('#RegisterFormCard').addClass('hide');
+		$('#LoginFormCard').removeClass('hide');
+	}
+
+	var $loginForm=$('#LoginForm');
+	var $registerForm=$('#RegisterForm');
+
+	$loginForm.submit(function (e) {
+			e.preventDefault();
+			$('#LoginFormButton').addClass('hide');
+            $('#loginSpinner').addClass('active');
+            $('#loginSpinner').removeClass('hide');
+			// var form = $('form')[0];
+			var formData=$loginForm.serialize();
+			$.ajax({
+				url:'/login',
+				data:formData,
+				type:'POST',
+				success:function (result) {
+					if(result=="1"){
+						M.toast({html: 'Yeyy ! You are in.', displayLength:3000});
+	                    window.location.replace('home');
+					}
+					else{
+						M.toast({html: result, displayLength:5000});
+	                	$('#loginSpinner').removeClass('active');
+	                	$('#loginSpinner').addClass('hide');
+	                	$('#LoginFormButton').removeClass('hide');
+					}
+				}
+			});
+		});
+
+	$registerForm.submit(function (e) {
+			e.preventDefault();
+			$('#RegisterFormButton').addClass('hide');
+            $('#RegisterSpinner').addClass('active');
+            $('#RegisterSpinner').removeClass('hide');
+			// var form = $('form')[2];
+			var formData=$registerForm.serialize();
+			$.ajax({
+				url:'/register',
+				data:formData,
+				type:'POST',
+				success:function (result) {
+					if(result=="1"){
+						M.toast({html: 'Success :) You are Registered! Redirecting...', displayLength:3000});
+						$('#RegisterSpinner').removeClass('active');
+	                    $('#RegisterSpinner').addClass('hide');
+	                    $('#RegisterFormButton').removeClass('hide');
+	                    window.location.href=window.location.pathname;
+					}
+					else{
+						M.toast({html: result, displayLength:5000});
+	                	$('#RegisterSpinner').removeClass('active');
+	                	$('#RegisterSpinner').addClass('hide');
+	                	$('#RegisterFormButton').removeClass('hide');
+					}
+				}
+			});
+		});
+
+</script>
+{% endblock %}
